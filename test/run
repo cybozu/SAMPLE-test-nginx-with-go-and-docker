@@ -1,0 +1,25 @@
+#!/bin/sh -eu
+
+cd "$(dirname "$0")"
+
+docker network create nginx-test || true
+
+# CircleCI 上では setup_remote_docker で立ち上げたコンテナに primary container から通信する手段が存在しないので、
+# テスト全体を remote docker 上で実行する
+docker create -v /project --name nginx-test-data busybox:latest /bin/true
+trap "docker rm nginx-test-data" EXIT
+docker cp . nginx-test-data:/project
+
+echo "-------------------------------------------------------------------------"
+
+docker run \
+    --volumes-from nginx-test-data \
+    --net nginx-test \
+    --name nginx-tester \
+    --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -w /project \
+    -e "DOCKER_NETWORK=nginx-test" \
+    --user root \
+    circleci/golang:1.14 \
+    go test -v ./...

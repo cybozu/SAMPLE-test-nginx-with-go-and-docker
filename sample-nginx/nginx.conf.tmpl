@@ -11,6 +11,10 @@ http {
             proxy_set_header X-Cybozu-Request-Id $request_id;
         }
 
+        location = /health {
+            return 200 "OK";
+        }
+
         location = /robots.txt {
             return 200 "User-agent: *\nDisallow: /\n";
         }
