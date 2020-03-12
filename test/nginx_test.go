@@ -126,25 +126,41 @@ func TestRobotsTxt(t *testing.T) {
 	t.Parallel()
 
 	nginx := StartNginx(t, NginxConfig{})
-	defer nginx.Close(t)
+	t.Cleanup(func() {
+		nginx.Close(t)
+	})
 	nginx.Wait(t)
 
-	resp, err := http.Get(nginx.URL() + "/robots.txt")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer resp.Body.Close()
+	t.Run("GET /robots.txt", func(t *testing.T) {
+		resp, err := http.Get(nginx.URL() + "/robots.txt")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("status code should be 200, but %d", resp.StatusCode)
-	}
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("status code should be 200, but %d", resp.StatusCode)
+		}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	expected := "User-agent: *\nDisallow: /\n"
-	if string(body) != expected {
-		t.Errorf("unexpected response body: %s", string(body))
-	}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected := "User-agent: *\nDisallow: /\n"
+		if string(body) != expected {
+			t.Errorf("unexpected response body: %s", string(body))
+		}
+	})
+
+	t.Run("GET /secret/", func(t *testing.T) {
+		resp, err := http.Get(nginx.URL() + "/secret/")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusForbidden {
+			t.Errorf("status code should be 400, but %d", resp.StatusCode)
+		}
+	})
 }
