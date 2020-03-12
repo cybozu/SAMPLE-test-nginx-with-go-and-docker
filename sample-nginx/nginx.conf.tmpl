@@ -1,0 +1,22 @@
+user nginx;
+
+events {}
+
+http {
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://${AP_SERVER_ADDR}; 
+            proxy_set_header X-Cybozu-Request-Id $request_id;
+        }
+
+        location = /robots.txt {
+            return 200 "User-agent: *\nDisallow: /\n";
+        }
+
+        location /secret/ {
+            deny all;
+        }
+    }
+}
