@@ -20,6 +20,7 @@ docker run \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -w /project \
     -e "DOCKER_NETWORK=nginx-test" \
+    -e "TESTER_NAME=nginx-tester" \
     --user root \
     circleci/golang:1.14 \
     go test -v ./...
