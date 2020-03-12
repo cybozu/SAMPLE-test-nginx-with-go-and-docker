@@ -7,7 +7,7 @@ http {
         listen 80;
 
         location / {
-            proxy_pass http://${AP_SERVER_ADDR}; 
+            proxy_pass http://${AP_SERVER_ADDR};
             proxy_set_header X-Request-Id $request_id;
         }
 
