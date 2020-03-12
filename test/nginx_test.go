@@ -13,7 +13,7 @@ func TestStaticResponses(t *testing.T) {
 	defer nginx.Close(t)
 	nginx.Wait(t)
 
-	t.Run("GET /robots.txt", func(t *testing.T) {
+	t.Run("robots.txt should be available", func(t *testing.T) {
 		resp, err := http.Get(nginx.URL() + "/robots.txt")
 		if err != nil {
 			t.Fatal(err)
@@ -34,7 +34,7 @@ func TestStaticResponses(t *testing.T) {
 		}
 	})
 
-	t.Run("GET /secret/", func(t *testing.T) {
+	t.Run("access to /secret/ should be denied", func(t *testing.T) {
 		resp, err := http.Get(nginx.URL() + "/secret/")
 		if err != nil {
 			t.Fatal(err)
@@ -74,8 +74,7 @@ func TestReverseProxy(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		expected := "I am AP server"
-		if string(body) != expected {
+		if string(body) != "I am AP server" {
 			t.Errorf("unexpected response body: %s", string(body))
 		}
 	})

@@ -12,17 +12,19 @@ import (
 	"time"
 )
 
+// Nginx はテスト対象となる nginx のプロセスを表す。
 type Nginx struct {
 	cmd           *exec.Cmd
 	containerName string
 	exited        chan int // 終了したら ExitCode が入る
 }
 
+// NginxConfig は nginx を起動するために必要なオプションを保持する。
 type NginxConfig struct {
 	APServerAddress string
 }
 
-// StartNginx は新しい nginx のインスタンスを起動する。
+// StartNginx は新しい nginx のプロセスを起動する。
 func StartNginx(t *testing.T, config NginxConfig) *Nginx {
 	name := "nginx-" + randomSuffix()
 
@@ -32,7 +34,8 @@ func StartNginx(t *testing.T, config NginxConfig) *Nginx {
 	}
 
 	if config.APServerAddress == "" {
-		config.APServerAddress = "localhost:9999" // 無効なポート
+		// 誰も listen していないポートを指定することで bad gateway になるようにする
+		config.APServerAddress = "localhost:9999"
 	}
 
 	args := []string{
@@ -66,12 +69,12 @@ func StartNginx(t *testing.T, config NginxConfig) *Nginx {
 	return nginx
 }
 
-// URL はこの nginx にアクセスするための URL を返す。
+// URL は nginx にアクセスするための URL を返す。
 func (n *Nginx) URL() string {
 	return fmt.Sprintf("http://%s:80", n.containerName)
 }
 
-// Wait はこの nginx が起動するまで待つ。
+// Wait は nginx が起動するまで待つ。
 func (n *Nginx) Wait(t *testing.T) {
 	maxRetry := 20
 	for i := 0; i < maxRetry; i++ {
@@ -93,7 +96,7 @@ func (n *Nginx) Wait(t *testing.T) {
 	}
 }
 
-// Close はこの nginx を終了する。
+// Close は nginx を終了する。
 func (n *Nginx) Close(t *testing.T) {
 	cmd := exec.Command("docker", "kill", n.containerName)
 	cmd.Stdout = os.Stdout
