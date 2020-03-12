@@ -59,7 +59,7 @@ func TestReverseProxy(t *testing.T) {
 	defer nginx.Close(t)
 	nginx.Wait(t)
 
-	t.Run("GET /", func(t *testing.T) {
+	t.Run("response should be returned from AP", func(t *testing.T) {
 		resp, err := http.Get(nginx.URL() + "/")
 		if err != nil {
 			t.Fatal(err)
@@ -77,6 +77,19 @@ func TestReverseProxy(t *testing.T) {
 		expected := "I am AP server"
 		if string(body) != expected {
 			t.Errorf("unexpected response body: %s", string(body))
+		}
+	})
+
+	t.Run("X-Request-Id should be sent to AP", func(t *testing.T) {
+		resp, err := http.Get(nginx.URL() + "/")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		requestID := ap.LastRequest().Header.Get("X-Request-Id")
+		if requestID == "" {
+			t.Error("X-Request-Id header does not exist")
 		}
 	})
 }

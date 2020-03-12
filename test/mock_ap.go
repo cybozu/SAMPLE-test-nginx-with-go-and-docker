@@ -61,6 +61,12 @@ func (a *MockAP) Address() string {
 	return fmt.Sprintf("%s:%d", a.host, a.port)
 }
 
+func (a *MockAP) LastRequest() *http.Request {
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
+	return a.lastRequest
+}
+
 func (a *MockAP) Close(t *testing.T) {
 	if err := a.server.Close(); err != nil {
 		t.Log(err)
