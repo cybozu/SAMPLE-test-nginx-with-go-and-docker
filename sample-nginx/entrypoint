@@ -1,5 +1,4 @@
-#!/bin/sh
-set -eu
+#!/bin/sh -eu
 
 envsubst '$AP_SERVER_ADDR' \
     < /etc/nginx/nginx.conf.tmpl \

@@ -38,6 +38,7 @@ func StartNginx(t *testing.T, config NginxConfig) *Nginx {
 		config.APServerAddress = "localhost:9999"
 	}
 
+	// docker コマンドを叩いて sample-nginx:latest を起動する。
 	args := []string{
 		"run", "--rm",
 		"--name", name,
@@ -58,6 +59,7 @@ func StartNginx(t *testing.T, config NginxConfig) *Nginx {
 		exited:        make(chan int),
 	}
 
+	// nginx プロセスが終了したら nginx.exited に終了ステータスを入れるようにする
 	go func() {
 		if err := cmd.Wait(); err != nil {
 			t.Log(err)
@@ -80,12 +82,15 @@ func (n *Nginx) Wait(t *testing.T) {
 	for i := 0; i < maxRetry; i++ {
 		t.Logf("Wait for nginx... (%d/%d)", i, maxRetry)
 
+		// nginx が死んでないか調べる。
+		// この時点で死んでいたらテストを fail させる。
 		select {
 		case exitCode := <-n.exited:
 			t.Fatalf("nginx exited unexpectedly: exitCode=%d", exitCode)
 		default:
 		}
 
+		// ヘルスチェック用エンドポイントを叩いて何か返ってきたら起動したものとする。
 		resp, err := http.Get(n.URL() + "/health")
 		if err != nil {
 			time.Sleep(500 * time.Millisecond)
@@ -108,7 +113,8 @@ func (n *Nginx) Close(t *testing.T) {
 	<-n.exited // 終了するまで待つ
 }
 
-// randomSuffix はコンテナ名やボリューム名の suffix として使うためのランダム文字列を返す
+// randomSuffix はコンテナ名の suffix として使うためのランダム文字列を返す。
+// suffix をつけるのは、テストを並列実行したときにコンテナの名前が被らないようにするため。
 func randomSuffix() string {
 	b := make([]byte, 6)
 	_, err := rand.Read(b)

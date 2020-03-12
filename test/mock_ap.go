@@ -29,7 +29,7 @@ func StartMockAP(t *testing.T) *MockAP {
 		t.Fatal("Please specify TESTER_NAME")
 	}
 
-	l, err := net.Listen("tcp", ":0")
+	l, err := net.Listen("tcp", ":0") // 空いているポートを自動的に選ぶ
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,10 +44,12 @@ func StartMockAP(t *testing.T) *MockAP {
 			ap.mutex.Lock()
 			defer ap.mutex.Unlock()
 			ap.lastRequest = req
+
 			w.Write([]byte("I am AP server"))
 		}),
 	}
 
+	// 別の goroutine でサーバーを走らせる。終了したら ap.exited に値が入るようにしておく。
 	go func() {
 		if err := ap.server.Serve(l); err != nil && err != http.ErrServerClosed {
 			t.Log(err)
