@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// リバプロせずに nginx が直接レスポンスを返すパターンのテスト
 func TestStaticResponses(t *testing.T) {
 	t.Parallel()
 
@@ -47,6 +48,7 @@ func TestStaticResponses(t *testing.T) {
 	})
 }
 
+// APサーバーにリバプロするパターンのテスト
 func TestReverseProxy(t *testing.T) {
 	t.Parallel()
 
