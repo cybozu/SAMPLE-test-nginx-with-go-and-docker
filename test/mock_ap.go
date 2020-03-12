@@ -16,8 +16,6 @@ type MockAP struct {
 	host string
 	port int
 
-	exited chan error // server が終了したらその err が入る
-
 	lastRequest *http.Request
 	mutex       sync.Mutex
 }
@@ -37,7 +35,6 @@ func StartMockAP(t *testing.T) *MockAP {
 	ap := &MockAP{
 		host:   host,
 		port:   l.Addr().(*net.TCPAddr).Port,
-		exited: make(chan error),
 	}
 	ap.server = &http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -54,8 +51,6 @@ func StartMockAP(t *testing.T) *MockAP {
 		if err := ap.server.Serve(l); err != nil && err != http.ErrServerClosed {
 			t.Log(err)
 		}
-		ap.exited <- err
-		close(ap.exited)
 	}()
 
 	return ap
@@ -79,6 +74,4 @@ func (a *MockAP) Close(t *testing.T) {
 	if err := a.server.Close(); err != nil {
 		t.Log(err)
 	}
-
-	<-a.exited // 終了を待つ
 }
