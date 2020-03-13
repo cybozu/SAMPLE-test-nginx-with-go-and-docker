@@ -33,8 +33,8 @@ func StartMockAP(t *testing.T) *MockAP {
 	}
 
 	ap := &MockAP{
-		host:   host,
-		port:   l.Addr().(*net.TCPAddr).Port,
+		host: host,
+		port: l.Addr().(*net.TCPAddr).Port,
 	}
 	ap.server = &http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
