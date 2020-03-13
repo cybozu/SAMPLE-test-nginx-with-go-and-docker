@@ -36,14 +36,15 @@ func StartMockAP(t *testing.T) *MockAP {
 		host: host,
 		port: l.Addr().(*net.TCPAddr).Port,
 	}
-	ap.server = &http.Server{
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			ap.mutex.Lock()
-			defer ap.mutex.Unlock()
-			ap.lastRequest = req
+	handler := func(w http.ResponseWriter, req *http.Request) {
+		ap.mutex.Lock()
+		defer ap.mutex.Unlock()
+		ap.lastRequest = req
 
-			w.Write([]byte("I am AP server"))
-		}),
+		w.Write([]byte("I am AP server"))
+	}
+	ap.server = &http.Server{
+		Handler: http.HandlerFunc(handler),
 	}
 
 	// 別の goroutine でサーバーを走らせる
