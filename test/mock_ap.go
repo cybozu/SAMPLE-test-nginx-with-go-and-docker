@@ -46,7 +46,7 @@ func StartMockAP(t *testing.T) *MockAP {
 		}),
 	}
 
-	// 別の goroutine でサーバーを走らせる。終了したら ap.exited に値が入るようにしておく。
+	// 別の goroutine でサーバーを走らせる
 	go func() {
 		if err := ap.server.Serve(l); err != nil && err != http.ErrServerClosed {
 			t.Log(err)
