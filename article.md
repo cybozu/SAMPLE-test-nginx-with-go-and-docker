@@ -36,18 +36,18 @@ APサーバーにリバプロするエンドポイントや、常に 400 を返�
 
 ```nginx
 server {
-    listen 80;
+	listen 80;
 
-    location / {
-        proxy_pass http://${AP_SERVER_ADDR};
-        ...
-    }
+	location / {
+		proxy_pass http://${AP_SERVER_ADDR};
+		...
+	}
 
-    location /secret/ {
-        deny all;
-    }
+	location /secret/ {
+		deny all;
+	}
 
-    ...
+	...
 }
 ```
 
@@ -97,17 +97,17 @@ func TestSecretEndpoints(t *testing.T) {
 
 	nginx := StartNginx(t, NginxConfig{}) // ①
 	defer nginx.Close(t)
-    nginx.Wait(t)
-    
-    resp, err := http.Get(nginx.URL() + "/secret/") // ②
-    if err != nil {
-        t.Fatal(err)
-    }
-    defer resp.Body.Close()
+	nginx.Wait(t)
+	
+	resp, err := http.Get(nginx.URL() + "/secret/") // ②
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
 
-    if resp.StatusCode != http.StatusForbidden { // ③
-        t.Errorf("status code should be 400, but %d", resp.StatusCode)
-    }
+	if resp.StatusCode != http.StatusForbidden { // ③
+		t.Errorf("status code should be 400, but %d", resp.StatusCode)
+	}
 }
 ```
 
@@ -166,23 +166,23 @@ func TestReverseProxy(t *testing.T) {
 	defer nginx.Close(t)
 	nginx.Wait(t)
 
-    resp, err := http.Get(nginx.URL() + "/") // ③
-    if err != nil {
-        t.Fatal(err)
-    }
-    defer resp.Body.Close()
+	resp, err := http.Get(nginx.URL() + "/") // ③
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
 
-    if resp.StatusCode != http.StatusOK {
-        t.Errorf("status code should be 200, but %d", resp.StatusCode)
-    }
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("status code should be 200, but %d", resp.StatusCode)
+	}
 
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        t.Fatal(err)
-    }
-    if string(body) != "I am AP server" {
-        t.Errorf("unexpected response body: %s", string(body))
-    }
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(body) != "I am AP server" {
+		t.Errorf("unexpected response body: %s", string(body))
+	}
 }
 ```
 
@@ -215,9 +215,9 @@ handler := func(w http.ResponseWriter, req *http.Request) {
 ap := &MockAP{
 	host: host,
 	port: l.Addr().(*net.TCPAddr).Port,
-    server: &http.Server{
-        Handler: http.HandlerFunc(handler),
-    },
+	server: &http.Server{
+		Handler: http.HandlerFunc(handler),
+	},
 }
 
 // 別の goroutine でサーバーを走らせる
