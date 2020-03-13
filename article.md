@@ -40,9 +40,10 @@ server {
 APサーバーのアドレスを直接設定ファイルに埋め込むのではなく、`AP_SERVER_ADDR` という環境変数に切り出しています。
 これは、テストする際にAPサーバーをモックサーバーに置き換える必要があるためです。
 
-一般に、テスト環境と運用環境で異なる値を使う場合、そこを環境変数に切り出すことになります。これは普通のプログラミングにおける Dependency Injection に相当する作業です。
+一般に、テスト環境と運用環境で異なる値を使う場合、それを環境変数に切り出す必要があります。
 
 切り出した環境変数は、コンテナ起動時に [envsubst][envsubst] で具体的な値に展開します。
+サンプルコードでは entrypoint がその作業をやっています。 // TODO: リンク
 
 [envsubst]: https://www.gnu.org/software/gettext/manual/gettext.html#envsubst-Invocation
 
@@ -57,7 +58,7 @@ APサーバーのアドレスを直接設定ファイルに埋め込むのでは
 太い青枠で囲われた部分が Docker コンテナを表しています。nginx-tester と nginx という２種類のコンテナがあります。nginx のコンテナに `-xxxxxx` という suffix が付いているのは、ランダムな suffix が付与されることを表しています。
 
 nginx-tester は `go test -v ./...` を実行するコンテナです。
-テストの実行には Go と docker が必要なので、nginx-tester のイメージには `circleci/golang:1.14` を使っています。
+テストの実行には Go と docker が必要なので、nginx-tester のイメージには `circleci/golang:1.14` を使っています。
 
 nginx コンテナは、テスト対象となる nginx を格納しているコンテナです。
 サンプルコードでは、`sample-nginx:latest` というイメージです。
