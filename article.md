@@ -31,7 +31,7 @@ Docker がインストールされていれば動きます。
 この記事のために説明用のサンプルコードを用意しました。
 ローカルに clone してきて `make test` するとテストを実行できます。
 
-TODO: URL を貼る。
+https://github.com/cybozu/SAMPLE-test-nginx-with-go-and-docker
 
 ## テスト対象の nginx
 
@@ -60,7 +60,7 @@ APサーバーのアドレスを直接設定ファイルに埋め込むのでは
 これは、テストする際にAPサーバーをモックサーバーに置き換える必要があるためです。
 
 切り出した環境変数は、コンテナ起動時に [envsubst][envsubst] で具体的な値に展開します。
-サンプルコードでは entrypoint というシェルスクリプトがその作業をやっています。 // TODO: リンク
+サンプルコードでは [entrypoint というシェルスクリプト](https://github.com/cybozu/SAMPLE-test-nginx-with-go-and-docker/blob/master/sample-nginx/entrypoint)がその作業をやっています。
 
 サンプルコードでは環境変数は `AP_SERVER_ADDR` のみでしたが、他にも環境によって値が変わる設定項目があればすべて環境変数に切り出す必要があります。
 例えば、`resolver` を使っている場合、テスト環境では Docker の DNS サーバーである `127.0.0.11` を指定しないといけないので、環境変数に切り出します。
