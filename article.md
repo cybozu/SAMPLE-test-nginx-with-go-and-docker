@@ -93,16 +93,16 @@ AP のモックサーバーは独立したコンテナではなく、nginx-teste
 
 次に CircleCI 上でどのようにテストを実行するかを説明します。
 CircleCI では、`setup_remote_docker` を使って作成されたリモート環境で docker が実行されます。
-私たちのテストは、このリモート環境の中で実行されます。
+テストは、このリモート環境の中で実行されます。
 
 ![circleci](./circleci.png)
 
 CircleCI でこのテストを走らせるにあたって、注意しないといけないのは次の２点です。
 
 1. リモート環境と Primary Container (`config.yml` に書かれたステップを実行するコンテナ)の間では、セキュリティ上の理由から、HTTP や TCP などの通信が行えません。よって、リモート環境との通信は `docker` コマンドを用いたものに限定されます。
-2. リモート環境では、Primary Container 上のファイルシステムが見れません。つまり、リモート環境からはソースコードが見えないということです。
+2. リモート環境では、Primary Container 上のファイルシステムが見れません。つまり、リモート環境からはソースコードが見えないということです。
 
-実は、nginx-tester をローカルで直接実行せずにわざわざコンテナ内で実行していたのは、1 の問題を回避するためでした。
+実は、nginx-tester をローカルで直接実行せずにわざわざコンテナ内で実行していたのは、1 の問題を回避するためでした。
 
 2 の問題に関しては [CircleCI の公式ドキュメントに回避策が載っています](https://circleci.com/docs/2.0/building-docker-images/#mounting-folders)。
 以下の手順を行うことで、Primary Container から `nginx-tester` にソースコードを渡せます。
